@@ -1,0 +1,54 @@
+:root {
+    box-sizing: border-box;
+}
+
+*,
+::before,
+::after {
+    box-sizing: inherit;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: rgb(33, 43, 68);
+}
+
+header {
+    display: block;
+    margin-bottom: 20px;
+    padding: 20px;
+    text-align: center;
+    background-color: azure;
+}
+
+.canvas_container{
+    display: block;
+    position: relative;
+    width: 700px;
+    height: 600px;
+    margin: 0 auto;
+    margin-bottom: 25px;
+}
+
+#myCanvas, #myCanvas2 {
+    position: absolute;
+    top: 0;
+    left: 0;  
+    width: 700px;
+    height: 600px;
+    background-color: rgb(79, 79, 79);
+}
+
+#myCanvas {
+    opacity: 100;
+}
+
+button {
+    display: block;
+    margin: 0 auto;
+    padding: 12px 30px;
+    font-size: 18px;
+}
