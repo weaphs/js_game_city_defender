@@ -18,12 +18,21 @@ const sound_of_shot = new Audio();
 sound_of_shot.src = 'audio/shot.mp3';
 
 
+canvas.style.cursor = "none"; //приховати стандартне зображення курсора мишки
+const crosshair = new Image();
+crosshair.src = "images/crosshair.png";// зображення прицілу для курсора миші
+let mouseX = 0; // координати для руху прицілу
+let mouseY = 0;
+
+
 let gameFrame = 0; // номер кадру
 let gameSpeed = 3; // швидкість руху шахеду
 let number_of_tracks = 7; // кількість доріжок для шахедів 
 let score = 0; // кількість збитих шахедів
+let bestScore = 0; // рекорд
 let hits = 0; //кількість влучань в місто
 let gameOver = false;
+let animationId;
 
 let timeToNewShahed = 0;
 let shahedInterval = 1000;
@@ -37,6 +46,7 @@ let building_explosions = [];
 document.addEventListener("DOMContentLoaded", () => {
     const startButton = document.querySelector("#startButton");
     startButton.addEventListener("click", ()=>{
+        cancelAnimationFrame(animationId);
         gameOver = false;
         shahed_array = [];
         explosions = [];
@@ -168,7 +178,15 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawScore(){
         ctx.fillStyle = "black";
         ctx.font = "30px Arial";
-        ctx.fillText('Score: ' + score, 55, 55);
+        ctx.textAlign = "left";
+        ctx.fillText('Score: ' + score, 55, 100);
+    };
+
+    function drawBestScore() {
+        ctx.fillStyle = "black";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText('Best score: ' + bestScore, 55, 55);
     };
 
     function drawGameOver(){
@@ -177,6 +195,21 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.font = "40px Arial";
         ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
     };
+
+    canvas.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+    });
+
+    function drawCursor() {
+        let crosshairSize = 128;
+        ctx.drawImage(
+            crosshair, 0, 0, 1024, 1024,
+            mouseX - (crosshairSize/2), mouseY - (crosshairSize/2), crosshairSize, crosshairSize
+        );
+
+    }
 
     window.addEventListener('click', e => {
         const rect = collisionCanvas.getBoundingClientRect(); // рамки об'єкта canvas
@@ -191,7 +224,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ){object.markedForDelition=true;
             score++;
             explosions.push(new Explosion(object.x, object.y, object.width));
-            }else{
+            } else if (e.clientX > rect.x && e.clientX < rect.x+rect.width &&
+                e.clientY > rect.y && e.clientY < rect.y+rect.width
+            ){
                 sound_of_shot.play();
                 sound_of_shot.play().catch(() => { });
             }
@@ -221,13 +256,20 @@ document.addEventListener("DOMContentLoaded", () => {
         shahed_array = shahed_array.filter(shahed => !shahed.markedForDelition);
         explosions = explosions.filter(explosion => !explosion.markedForDelition);
         building_explosions = building_explosions.filter(explosion => !explosion.markedForDelition);
+        drawBestScore();
         drawScore();
+        drawCursor();
         if(hits>3){
+            if (score > bestScore) {
+                bestScore = score;
+            }
             gameOver=true;
         };
-        if(!gameOver){requestAnimationFrame(animate);
-        }else{drawGameOver();};
-        
+        if (!gameOver) {
+            animationId = requestAnimationFrame(animate);
+        } else {
+            drawGameOver();
+        }
+ 
     }
-
 });
