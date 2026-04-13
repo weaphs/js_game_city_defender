@@ -14,6 +14,9 @@ collisionCanvas.height = parseInt(style.height);
 const backgroundImage = new Image(); // об'єкт зображення фону
 backgroundImage.src = "images/kyiv_background.png"; //шлях до зображення фону
 
+const backgroundImageMobile = new Image(); // об'єкт зображення фону для мобільної версії
+backgroundImageMobile.src = "images/kyiv_background_mobile.png"; //шлях до зображення фону для мобільної версії
+
 const sound_of_shot = new Audio();
 sound_of_shot.src = 'audio/shot.mp3';
 
@@ -236,7 +239,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function animate(timestamp) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         collisionCtx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        if (window.matchMedia("(min-width: 1024px)").matches){
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            drawCursor();
+        }else{
+            ctx.drawImage(backgroundImageMobile, 0, 0, canvas.width, canvas.height);
+        }
         let deltaTime = timestamp - lastTime;
         lastTime = timestamp;
         timeToNewShahed += deltaTime;
@@ -258,9 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
         building_explosions = building_explosions.filter(explosion => !explosion.markedForDelition);
         drawBestScore();
         drawScore();
-        if (window.matchMedia("(min-width: 1024px)").matches) { // малювання курсора у вигляді прицілу лише для desktop
-            drawCursor();
-        }
         if(hits>3){
             if (score > bestScore) {
                 bestScore = score;
