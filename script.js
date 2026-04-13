@@ -258,7 +258,9 @@ document.addEventListener("DOMContentLoaded", () => {
         building_explosions = building_explosions.filter(explosion => !explosion.markedForDelition);
         drawBestScore();
         drawScore();
-        drawCursor();
+        if (window.matchMedia("(min-width: 1024px)").matches) { // малювання курсора у вигляді прицілу лише для desktop
+            drawCursor();
+        }
         if(hits>3){
             if (score > bestScore) {
                 bestScore = score;
